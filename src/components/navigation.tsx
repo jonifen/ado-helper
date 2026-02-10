@@ -12,12 +12,12 @@ export function Navigation() {
       ADO Helper
       {navLinks.map((nl) => {
         return (
-          <>
+          <React.Fragment key={nl.path}>
             {" | "}
-            <NavLink to={nl.path} key={nl.path} title={nl.name}>
+            <NavLink to={nl.path} title={nl.name}>
               {nl.name}
             </NavLink>
-          </>
+          </React.Fragment>
         );
       })}
     </div>
