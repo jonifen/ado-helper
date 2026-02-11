@@ -1,47 +1,49 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import type {
-  IterationsType,
-  IterationsValueType,
-} from "../../data/api/iterations-types.js";
-import { getIteration, getIterations } from "../../data/api/iterations.js";
-import { getTeam } from "../../data/api/teams.js";
-import type { GetTeamType } from "../../data/api/teams-types.js";
+import { useIterationsStore } from "../../data/iterations-store.js";
+import { useTeamsStore } from "../../data/teams-store.js";
+import { IterationsPicker } from "../../components/iterations-picker.js";
 
 export function Team() {
   const { teamId } = useParams<{ teamId: string }>();
-  const [teamData, setTeamData] = useState<GetTeamType>();
-  //const [iterationData, setIterationData] = useState<IterationsValueType>();
-  const [iterationsData, setIterationsData] = useState<IterationsType>();
+
+  const { iterations, lastUpdated, loadIterations, refreshIterations } =
+    useIterationsStore((state) => state);
+  const { teams } = useTeamsStore((state) => state);
 
   useEffect(() => {
     if (!teamId) return;
 
-    const cb = async () => {
-      const getTeamResponse = await getTeam(teamId);
-      //const getIterationResponse = await getIteration(teamId, "iterationId");
-      const getIterationsResponse = await getIterations(teamId);
-      setTeamData(getTeamResponse);
-      //setIterationData(getIterationResponse);
-      setIterationsData(getIterationsResponse);
+    const loadData = async () => {
+      await loadIterations(teamId);
     };
 
-    cb();
+    loadData();
   }, []);
 
+  if (!teamId) {
+    return <div>No team ID provided.</div>;
+  }
+
+  const fetchData = async () => {
+    if (!teamId) return;
+    await refreshIterations(teamId);
+  };
+
   return (
-    <div>
-      <p>Team {teamData?.name}</p>
-      {iterationsData &&
-        iterationsData.value.map((iteration) => (
-          <div key={iteration.id}>
-            <p>{iteration.name}</p>
-            <p>
-              {iteration.attributes.startDate} -{" "}
-              {iteration.attributes.finishDate}
-            </p>
-          </div>
-        ))}
+    <div className="font-sans items-center justify-items-center min-h-screen px-8 pb-3">
+      <h2 className="text-xl font-bold">Iterations for Team {teams.find((team) => team.id === teamId)?.name}</h2>
+      <IterationsPicker teamId={teamId} iterations={iterations} />
+      <div>
+        <span className="text-sm text-gray-500">
+          {" "}
+          [ Last updated: {lastUpdated.toLocaleString()}{" "}
+        </span>
+        <a href="#" onClick={fetchData} className="text-sm">
+          Refresh
+        </a>
+        <span className="text-sm text-gray-500"> ]</span>
+      </div>
     </div>
   );
 }

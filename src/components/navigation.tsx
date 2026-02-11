@@ -8,7 +8,7 @@ const navLinks = [
 
 export function Navigation() {
   return (
-    <div>
+    <div className="w-full p-4 h-24 bg-gray-900">
       ADO Helper
       {navLinks.map((nl) => {
         return (

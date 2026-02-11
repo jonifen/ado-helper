@@ -54,8 +54,6 @@ export const useSettingsStore = create<SettingsStoreType>()(
       onRehydrateStorage: () => (state, error) => {
         if (error) {
           console.error("Error during hydration: ", error);
-        } else {
-          console.log("Store hydrated");
         }
       },
     },
