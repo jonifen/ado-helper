@@ -9,7 +9,7 @@ type IterationStoreType = {
   teamId: string;
   data: IterationDataType;
   lastUpdated: Date;
-  refreshing: boolean;
+  loadingIteration: boolean;
   loadIteration: (teamId: string, iterationId: string) => void;
   refreshIteration: (teamId: string, iterationId: string) => void;
 };
@@ -25,7 +25,7 @@ export const useIterationStore = create<IterationStoreType>()(
       teamId: "",
       data: {} as IterationDataType,
       lastUpdated: new Date(),
-      refreshing: false,
+      loadingIteration: false,
       loadIteration: async (teamId, iterationId) => {
         const key = getIterationDbKey(teamId, iterationId);
         const storedValue = await localforage.getItem<IterationStoreType>(key);
@@ -39,7 +39,7 @@ export const useIterationStore = create<IterationStoreType>()(
             lastUpdated: storedValue
               ? new Date(storedValue.lastUpdated)
               : new Date(),
-            refreshing: false,
+            loadingIteration: false,
           }));
         } else {
           await get().refreshIteration(teamId, iterationId);
@@ -47,7 +47,7 @@ export const useIterationStore = create<IterationStoreType>()(
       },
       refreshIteration: async (teamId, iterationId) => {
         set(() => ({
-          refreshing: true,
+          loadingIteration: true,
         }));
         const newValue = await getIterationData(teamId, iterationId);
         set(() => ({
@@ -55,7 +55,7 @@ export const useIterationStore = create<IterationStoreType>()(
           iterationId: iterationId,
           data: newValue || ({} as IterationDataType),
           lastUpdated: new Date(),
-          refreshing: false,
+          loadingIteration: false,
         }));
       },
     }),

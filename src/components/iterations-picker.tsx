@@ -65,7 +65,7 @@ export function IterationsPicker({
     const [open, setOpen] = React.useState(false);
     if (node.children) {
       return (
-        <div key={node.name} className="mb-2">
+        <div key={node.name}>
           <button
             className="w-full text-left p-2 font-semibold bg-gray-800 text-gray-100 border border-gray-700 rounded cursor-pointer hover:bg-gray-700 transition-colors"
             onClick={() => setOpen((o) => !o)}

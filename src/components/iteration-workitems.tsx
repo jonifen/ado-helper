@@ -1,30 +1,5 @@
-import type {
-  WorkItemDataType,
-  WorkItemResponseType,
-} from "../data/api/workitems-types.js";
 import { useSettingsStore } from "../data/settings-store.js";
 import type { IterationWorkItemsType } from "../managers/iterations-manager-types.js";
-import { sortWorkItemsByState } from "../utils/workitem-sort.js";
-
-const workItemIcons: {
-  "User Story": string;
-  Bug: string;
-  "Small Works": string;
-} = {
-  "User Story": "📖",
-  Bug: "🐞",
-  "Small Works": "⚒️",
-};
-
-function getWorkItemIcon(
-  workItemType: "User Story" | "Bug" | "Small Works",
-): string {
-  try {
-    return workItemIcons[workItemType] as string;
-  } catch {
-    return "❓";
-  }
-}
 
 export const IterationWorkitems = ({
   workItems,
@@ -35,7 +10,7 @@ export const IterationWorkitems = ({
 
   return (
     <div className="w-full">
-      <h2>Workitems</h2>
+      <h3 className="text-lg font-bold">Workitems</h3>
 
       {workItems.length === 0 && (
         <div className="text-sm">

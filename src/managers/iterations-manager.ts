@@ -20,6 +20,7 @@ import type {
   IterationDataWorkloadType,
   IterationWorkItemsType,
 } from "./iterations-manager-types.js";
+import { useIterationStore } from "../data/iteration-store.js";
 
 const ITERATION_LENGTH_IN_DAYS = 10;
 
@@ -420,13 +421,8 @@ export async function getIterationData(
   return output;
 }
 
-export async function getIterationDataCsv(
-  teamId: string,
-  iterationId: string,
-): Promise<string> {
-  const iterationData = await getIterationData(teamId, iterationId);
-
+export async function getIterationDataCsv(): Promise<string> {
+  const iterationData = useIterationStore.getState().data;
   const csv = generateCsv(iterationData);
-
   return csv;
 }

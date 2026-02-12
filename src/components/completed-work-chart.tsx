@@ -23,7 +23,7 @@ export const CompletedWorkChart = ({
 
   return (
     <>
-      <h4>Completed hours</h4>
+      <h4 className="text-lg font-bold">Completed hours</h4>
       <div style={{ width: 400, height: 400 }}>
         <ResponsiveContainer>
           <PieChart>

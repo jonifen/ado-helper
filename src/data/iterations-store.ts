@@ -8,6 +8,7 @@ type IterationsStoreType = {
   teamId: string;
   iterations: IterationsValueType[];
   lastUpdated: Date;
+  loadingIterations: boolean;
   loadIterations: (teamId: string) => void;
   refreshIterations: (teamId: string) => void;
 };
@@ -22,6 +23,7 @@ export const useIterationsStore = create<IterationsStoreType>()(
       teamId: "",
       iterations: [],
       lastUpdated: new Date(),
+      loadingIterations: false,
       loadIterations: async (teamId: string) => {
         const key = getIterationsDbKey(teamId);
         const storedValue = await localforage.getItem<IterationsStoreType>(key);
@@ -36,15 +38,20 @@ export const useIterationsStore = create<IterationsStoreType>()(
             lastUpdated: storedValue
               ? new Date(storedValue.lastUpdated)
               : new Date(),
+            loadingIterations: false,
           }));
         }
       },
       refreshIterations: async (teamId: string) => {
+        set(() => ({
+          loadingIterations: true,
+        }));
         const getIterationsResponse = await getIterations(teamId);
         set(() => ({
           teamId: teamId,
           iterations: getIterationsResponse.value,
           lastUpdated: new Date(),
+          loadingIterations: false,
         }));
       },
     }),

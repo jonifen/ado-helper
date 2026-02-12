@@ -31,7 +31,7 @@ export function TeamIterations() {
     loadIteration,
     refreshIteration,
     data,
-    refreshing,
+    loadingIteration,
     lastUpdated: iterationDataLastUpdated,
   } = useIterationStore((state) => state);
 
@@ -51,7 +51,7 @@ export function TeamIterations() {
     loadData();
   }, [iterationId, teamId]);
 
-  if (refreshing)
+  if (loadingIteration)
     return (
       <div className="font-sans items-center justify-items-center min-h-screen px-8 py-3">
         Loading
@@ -65,10 +65,10 @@ export function TeamIterations() {
         <IterationsPicker teamId={teamId} iterations={iterations} />
         <div className="flex flex-col gap-2 row-start-2 items-center sm:items-start max-w-full">
           <div>
-            <h1 className="text-3xl font-bold card-title !mt-0">
+            <h2 className="text-2xl font-bold card-title !mt-0">
               {data.teamName}
-            </h1>
-            <h2 className="text-2xl font-bold card-title !mt-0">{data.path}</h2>
+            </h2>
+            <h3 className="text-xl font-bold card-title !mt-0">{data.path}</h3>
           </div>
           <div>
             <strong>Start date:</strong> {data.startDate?.toDateString()}

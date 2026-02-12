@@ -15,12 +15,12 @@ export const IterationCalculations = ({
 }) => {
   return (
     <div className="w-full">
-      <h2>Calculations</h2>
+      <h2 className="text-xl font-bold">Calculations</h2>
       <i className="text-xs">
         Note: Calculations are as per midnight this morning and do not track
         progress throughout the day. <strong>All values are in hours.</strong>
       </i>
-      <table className="table table-auto text-sm">
+      <table className="table table-auto text-sm bg-[#1B3336] border border-slate-600">
         <thead>
           <tr>
             <th rowSpan={2}>Member</th>
@@ -115,13 +115,14 @@ export const IterationCalculations = ({
       </table>
 
       <div className="text-sm">
-        <h3>Team absence dates</h3>
+        <h3 className="text-lg font-bold">Team absence dates</h3>
         <ul>
           {resource.team.capacity.absence.dates.map((dayOff) => (
             <li key={`${resource.team.id}-${dayOff.valueOf()}`}>
               &middot; {dayOff.toDateString()}
             </li>
           ))}
+          {resource.team.capacity.absence.dates.length === 0 && (<li className="italic text-gray-400">No team absences</li> )}
         </ul>
       </div>
     </div>
