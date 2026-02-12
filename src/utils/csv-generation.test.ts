@@ -1,4 +1,4 @@
-import { generateCsv } from "../shared/csv-generation";
+import { generateCsv } from "./csv-generation.js";
 import { describe, it, expect } from "vitest";
 
 describe("generateCsv", () => {
@@ -68,13 +68,13 @@ describe("generateCsv", () => {
     const csv = generateCsv(mockData);
     const lines = csv.split("\n");
     expect(lines[0]).toBe(
-      "ID,Parent,Title,WorkItemType,State,AssignedTo,CreatedDate,Points,OriginalEstimate,RemainingWork,Completed",
+      "ID,Parent,Title,WorkItemType,State,AssignedTo,CreatedDate,CreatedAfterSprintStarted,ActiveBeforeSprintStarted,Points,OriginalEstimate,RemainingWork,Completed",
     );
     expect(lines[1]).toBe(
-      `"1","8","Test Work Item 1","Bug","Active","Alice","${mockData.workItems[0].createdDate}","5","8","3","2"`,
+      `"1","8","Test Work Item 1","Bug","Active","Alice","2026-01-01 00:00","","","5","8","3","2"`,
     );
     expect(lines[2]).toBe(
-      `"2","3","Test Work Item 2","Task","Closed","Unassigned","${mockData.workItems[1].createdDate}","","0","0","0"`,
+      `"2","3","Test Work Item 2","Task","Closed","Unassigned","2026-01-02 00:00","","","","0","0","0"`,
     );
   });
 
