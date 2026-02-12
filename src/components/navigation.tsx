@@ -9,7 +9,7 @@ const navLinks = [
 
 export function Navigation() {
   return (
-    <div className="w-full p-4 h-24 bg-gray-900 flex flex-col justify-center shadow-md">
+    <div id="navigation" data-testid="navigation" className="w-full p-4 h-24 bg-gray-900 flex flex-col justify-center shadow-md">
       <div className="flex flex-row justify-between">
         <h2 className="text-2xl font-bold">ADO Helper</h2>
         <div>
