@@ -62,7 +62,7 @@ function mapWorkItem(
 
   return {
     id: workItem.fields["System.Id"],
-    parentId: workItem.fields["System.Parent"] || undefined,
+    parentId: workItem.fields["System.Parent"],
     title: workItem.fields["System.Title"],
     state: workItem.fields["System.State"],
     type: {

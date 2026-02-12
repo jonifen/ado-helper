@@ -2,6 +2,7 @@
 import { render } from "@testing-library/react";
 import { IterationCalculations } from "./iteration-calculations.js";
 import { describe, it, expect } from "vitest";
+import type { IterationWorkItemsType } from "../managers/iterations-manager-types.js";
 
 const sampleResource = {
   team: {
@@ -20,7 +21,7 @@ const sampleResource = {
   ],
   sprint: { daysRemaining: 5 },
 };
-const sampleWorkItems = [];
+const sampleWorkItems: IterationWorkItemsType[] = [];
 const sampleDate = new Date();
 
 describe("IterationCalculations", () => {

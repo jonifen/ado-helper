@@ -2,11 +2,12 @@
 import { render } from "@testing-library/react";
 import { IterationWorkitems } from "./iteration-workitems.js";
 import { describe, it, expect } from "vitest";
+import type { IterationWorkItemsType } from "../managers/iterations-manager-types.js";
 
-const sampleWorkItems = [
+const sampleWorkItems: IterationWorkItemsType[] = [
   {
     id: 1,
-    parentId: undefined,
+    parentId: 0,
     title: "Test Story",
     state: "Active",
     type: { name: "Story", icon: "S" },
@@ -20,6 +21,7 @@ const sampleWorkItems = [
     createdAfterSprintStarted: false,
     activeBeforeSprintStarted: false,
     totals: { totalEstimated: 3, totalRemaining: 1, totalCompleted: 2 },
+    overEstimate: false,
   },
 ];
 

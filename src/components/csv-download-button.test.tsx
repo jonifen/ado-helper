@@ -17,7 +17,6 @@ describe("CsvDownloadButton", () => {
   });
 
   it("calls download logic on click", async () => {
-    // Mock Blob and URL
     window.Blob = vi.fn(() => ({}));
     window.URL.createObjectURL = vi.fn(() => "blob:url");
     const { getAllByText } = render(<CsvDownloadButton teamId="t1" iterationId="i1" />);
