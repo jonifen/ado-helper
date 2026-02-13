@@ -2,9 +2,22 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import { getTeams } from "../../data/api/teams.js";
 import { useTeamsStore } from "../../data/teams-store.js";
+import { useSettingsStore } from "../../data/settings-store.js";
 
 export function TeamsRoot() {
   const { teams, lastUpdated, saveTeams } = useTeamsStore((state) => state);
+  const { pat, organisation, project } = useSettingsStore((state) => state);
+
+  if (!pat || !organisation || !project) {
+    return (
+      <div className="font-sans items-center justify-items-center min-h-screen px-8 py-3">
+        <p>
+          Please go to the Settings page and enter your Personal Access Token,
+          Organisation, and Project to see your teams.
+        </p>
+      </div>
+    );
+  }
 
   const fetchTeams = async () => {
     const getTeamsResponse = await getTeams();
