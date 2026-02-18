@@ -85,7 +85,7 @@ export function TeamIterations() {
             <strong>Start date:</strong> {data.startDate?.toDateString()}
             {" | "}
             <strong>End date:</strong> {data.endDate?.toDateString()}
-            <CsvDownloadButton teamId={teamId} iterationId={iterationId} />
+            <CsvDownloadButton teamName={data.teamName} iterationName={data.path} />
             <span className="text-sm text-gray-500">
               {" "}
               [ Last updated: {iterationDataLastUpdated.toLocaleString()}{" "}

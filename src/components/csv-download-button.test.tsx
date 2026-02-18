@@ -12,14 +12,14 @@ vi.mock("../managers/iterations-manager.js", () => {
 
 describe("CsvDownloadButton", () => {
   it("renders button", () => {
-    const { getByText } = render(<CsvDownloadButton teamId="t1" iterationId="i1" />);
+    const { getByText } = render(<CsvDownloadButton teamName="Team A" iterationName="Iteration 1" />);
     expect(getByText(/Download CSV/i)).toBeTruthy();
   });
 
   it("calls download logic on click", async () => {
     window.Blob = vi.fn(() => ({}));
     window.URL.createObjectURL = vi.fn(() => "blob:url");
-    const { getAllByText } = render(<CsvDownloadButton teamId="t1" iterationId="i1" />);
+    const { getAllByText } = render(<CsvDownloadButton teamName="Team A" iterationName="Iteration 1" />);
     fireEvent.click(getAllByText(/Download CSV/i)[0]);
     expect(iterationManager.getIterationDataCsv).toHaveBeenCalled();
   });
