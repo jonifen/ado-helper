@@ -50,8 +50,8 @@ describe("parseRichTextSections", () => {
   });
 
   it("converts a literal '---' line into a horizontal rule", () => {
-    expect(parseRichTextSections("<p>---</p>")[0]?.html).toBe("<hr />");
-    expect(parseRichTextSections("<div>---</div>")[0]?.html).toBe("<hr />");
+    expect(parseRichTextSections("<p>---</p>")[0]?.html).toBe("<hr>");
+    expect(parseRichTextSections("<div>---</div>")[0]?.html).toBe("<hr>");
   });
 
   it("leaves genuinely inline code untouched", () => {
@@ -90,5 +90,38 @@ describe("parseRichTextSections", () => {
     expect(rendered).not.toContain("<div>");
     expect(rendered.match(/<pre>/g)).toHaveLength(1);
     expect(rendered).toContain("x-api-version");
+  });
+
+  it("converts ==text== into a yellow highlight mark", () => {
+    const sections = parseRichTextSections("<p>This is ==important== info</p>");
+    expect(sections[0]?.html).toBe(
+      '<p>This is <mark data-color="yellow">important</mark> info</p>',
+    );
+  });
+
+  it("converts !!text!! into a red highlight mark", () => {
+    const sections = parseRichTextSections("<p>This is !!urgent!! info</p>");
+    expect(sections[0]?.html).toBe(
+      '<p>This is <mark data-color="red">urgent</mark> info</p>',
+    );
+  });
+
+  it("handles multiple highlights of both colors in one line", () => {
+    const sections = parseRichTextSections("<p>==one== and !!two!! and ==three==</p>");
+    expect(sections[0]?.html).toBe(
+      '<p><mark data-color="yellow">one</mark> and <mark data-color="red">two</mark> and <mark data-color="yellow">three</mark></p>',
+    );
+  });
+
+  it("does not apply highlight syntax inside code blocks", () => {
+    const sections = parseRichTextSections("<p>Call <code>a==b==c</code> now</p>");
+    expect(sections[0]?.html).toBe("<p>Call <code>a==b==c</code> now</p>");
+  });
+
+  it("does not apply highlight syntax inside converted pre/code blocks", () => {
+    const html = "<li><code>{<br>&nbsp; ==not a highlight==<br>}</code></li>";
+    const sections = parseRichTextSections(`<ul>${html}</ul>`);
+    expect(sections[0]?.html).not.toContain("<mark");
+    expect(sections[0]?.html).toContain("==not a highlight==");
   });
 });
