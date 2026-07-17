@@ -12,7 +12,18 @@ function WorkItemSummaryCard({
   workItem: WorkItemSummaryType;
   label: string;
 }) {
-  const { organisation, project } = useSettingsStore((state) => state);
+  const { pat, organisation, project } = useSettingsStore((state) => state);
+
+  if (!pat || !organisation || !project) {
+    return (
+      <div className="font-sans items-center justify-items-center min-h-screen px-8 py-3">
+        <p>
+          Please go to the Settings page and enter your Personal Access Token,
+          Organisation, and Project to see your teams.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="border-1 border-[#16292B] rounded-md p-2 text-sm bg-[#1B3336] shadow-md">

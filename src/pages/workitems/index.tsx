@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useWorkItemStore } from "../../data/workitem-store.js";
+import { useSettingsStore } from "../../data/settings-store.js";
 
 const MAX_ID_LENGTH = 8;
 
@@ -17,6 +18,19 @@ export function WorkItemsSearch() {
       document.title = "ADO Helper";
     };
   }, []);
+
+  const { pat, organisation, project } = useSettingsStore((state) => state);
+
+  if (!pat || !organisation || !project) {
+    return (
+      <div className="font-sans items-center justify-items-center min-h-screen px-8 py-3">
+        <p>
+          Please go to the Settings page and enter your Personal Access Token,
+          Organisation, and Project to see your teams.
+        </p>
+      </div>
+    );
+  }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value.replace(/\D/g, "").slice(0, MAX_ID_LENGTH));

@@ -20,7 +20,7 @@ export function TeamIterations() {
   }>();
   if (!teamId || !iterationId) return null;
 
-  const { organisation, project } = useSettingsStore((state) => state);
+  const { pat, organisation, project } = useSettingsStore((state) => state);
   const { iterations, loadIterations, refreshIterations } = useIterationsStore(
     (state) => state,
   );
@@ -34,6 +34,17 @@ export function TeamIterations() {
     loadingIteration,
     lastUpdated: iterationDataLastUpdated,
   } = useIterationStore((state) => state);
+
+  if (!pat || !organisation || !project) {
+    return (
+      <div className="font-sans items-center justify-items-center min-h-screen px-8 py-3">
+        <p>
+          Please go to the Settings page and enter your Personal Access Token,
+          Organisation, and Project to see your teams.
+        </p>
+      </div>
+    );
+  }
 
   const fetchData = async () => {
     await refreshIterations(teamId);

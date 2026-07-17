@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useIterationsStore } from "../../data/iterations-store.js";
 import { useTeamsStore } from "../../data/teams-store.js";
+import { useSettingsStore } from "../../data/settings-store.js";
 import { IterationsPicker } from "../../components/iterations-picker.js";
 
 export function Team() {
@@ -20,6 +21,19 @@ export function Team() {
 
     loadData();
   }, []);
+
+  const { pat, organisation, project } = useSettingsStore((state) => state);
+
+  if (!pat || !organisation || !project) {
+    return (
+      <div className="font-sans items-center justify-items-center min-h-screen px-8 py-3">
+        <p>
+          Please go to the Settings page and enter your Personal Access Token,
+          Organisation, and Project to see your teams.
+        </p>
+      </div>
+    );
+  }
 
   if (!teamId) {
     return <div>No team ID provided.</div>;
