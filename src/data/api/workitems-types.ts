@@ -15,11 +15,21 @@ export type WorkItemDataType = {
     "System.Parent": number | null;
     "System.CreatedDate": Date;
     "System.Tags": string;
+    "System.Description"?: string;
+    "System.IterationPath"?: string;
+    "Microsoft.VSTS.Common.AcceptanceCriteria"?: string;
     "Microsoft.VSTS.Scheduling.StoryPoints": number | null;
     "Microsoft.VSTS.Scheduling.OriginalEstimate": number | null;
     "Microsoft.VSTS.Scheduling.RemainingWork": number | null;
     "Microsoft.VSTS.Scheduling.CompletedWork": number | null;
   };
+  relations?: WorkItemRelationType[];
+};
+
+export type WorkItemRelationType = {
+  rel: string;
+  url: string;
+  attributes?: { name?: string };
 };
 
 export type WorkItemRevisionType = {

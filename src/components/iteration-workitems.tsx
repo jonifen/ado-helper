@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useSettingsStore } from "../data/settings-store.js";
 import type { IterationWorkItemsType } from "../managers/iterations-manager-types.js";
 
@@ -30,12 +31,14 @@ export const IterationWorkitems = ({
             <div className="flex flex-row gap-2">
               <div className="flex-0 min-w-20 text-nowrap">
                 {story.type.icon}{" "}
+                <Link to={`/workitems/${story.id}`}>{story.id}</Link>{" "}
                 <a
                   href={`https://dev.azure.com/${organisation}/${project}/_workitems/edit/${story.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
+                  title="Open in Azure DevOps"
                 >
-                  {story.id}
+                  ↗
                 </a>
               </div>
               <div className="flex-1">
@@ -75,12 +78,14 @@ export const IterationWorkitems = ({
                     className={`flex flex-row gap-2 ${Math.abs(taskIndex % 2) === 1 ? "bg-[#23474A]" : ""}`}
                   >
                     <div className="flex-0 min-w-16">
+                      <Link to={`/workitems/${task.id}`}>{task.id}</Link>{" "}
                       <a
                         href={`https://dev.azure.com/${organisation}/${project}/_workitems/edit/${task.id}`}
                         target="_blank"
                         rel="noopener noreferrer"
+                        title="Open in Azure DevOps"
                       >
-                        {task.id}
+                        ↗
                       </a>
                     </div>
                     <div className="flex-1">

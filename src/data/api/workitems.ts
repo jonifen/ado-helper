@@ -1,6 +1,7 @@
 import { getDevOpsData, postDevOpsData } from "./ado-client.js";
 import { useSettingsStore } from "../settings-store.js";
 import type {
+  WorkItemDataType,
   WorkItemResponseType,
   WorkItemRevisionType,
   WorkItemUpdateType,
@@ -32,6 +33,14 @@ export async function getWorkItemsByIds(
     `https://dev.azure.com/${organisation}/${project}/_apis/wit/workitemsbatch?api-version=7.1`,
     body,
   );
+}
+
+export async function getWorkItemById(
+  workItemId: number,
+): Promise<WorkItemDataType> {
+  const { organisation, project } = useSettingsStore.getState();
+  const url = `https://dev.azure.com/${organisation}/${project}/_apis/wit/workitems/${workItemId}?$expand=all&api-version=7.1`;
+  return await getDevOpsData<WorkItemDataType>(url);
 }
 
 export async function getWorkItemRevisions(
