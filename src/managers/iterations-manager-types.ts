@@ -12,7 +12,7 @@ export type IterationDataType = {
 
 export type IterationWorkItemsType = {
   id: number;
-  parentId?: number | null;
+  parentId?: number;
   title: string;
   state: string;
   type: IterationWorkItemsTypeType;

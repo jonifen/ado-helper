@@ -5,7 +5,6 @@ type SettingsStoreType = {
   pat: string;
   organisation: string;
   project: string;
-  saveSettings: (settings: Partial<SettingsStoreType>) => void;
 };
 
 export const useSettingsStore = create<SettingsStoreType>()(
@@ -15,7 +14,8 @@ export const useSettingsStore = create<SettingsStoreType>()(
       organisation: "",
       project: "",
       saveSettings: (settings: Partial<SettingsStoreType>) => {
-        set(() => ({
+        set((state) => ({
+          ...state,
           ...settings,
         }));
       },
@@ -44,7 +44,7 @@ export const useSettingsStore = create<SettingsStoreType>()(
           };
         },
         setItem: (name: string, value: any) => {
-          const valueToStore = JSON.stringify(value.state);
+          const valueToStore = JSON.stringify(value);
           localStorage.setItem(name, valueToStore);
         },
         removeItem: (name: string) => {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useWorkItemStore } from "../../data/workitem-store.js";
 
@@ -10,6 +10,13 @@ export function WorkItemsSearch() {
   const { data, loading, error, loadWorkItem } = useWorkItemStore(
     (state) => state,
   );
+
+  useEffect(() => {
+    document.title = "Work Items (ADO Helper)";
+    return () => {
+      document.title = "ADO Helper";
+    };
+  }, []);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value.replace(/\D/g, "").slice(0, MAX_ID_LENGTH));

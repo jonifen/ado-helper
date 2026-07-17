@@ -20,7 +20,7 @@ export function TeamIterations() {
   }>();
   if (!teamId || !iterationId) return null;
 
-  const { pat, organisation, project } = useSettingsStore((state) => state);
+  const { organisation, project } = useSettingsStore((state) => state);
   const { iterations, loadIterations, refreshIterations } = useIterationsStore(
     (state) => state,
   );
@@ -34,17 +34,6 @@ export function TeamIterations() {
     loadingIteration,
     lastUpdated: iterationDataLastUpdated,
   } = useIterationStore((state) => state);
-
-  if (!pat || !organisation || !project) {
-    return (
-      <div className="font-sans items-center justify-items-center min-h-screen px-8 py-3">
-        <p>
-          Please go to the Settings page and enter your Personal Access Token,
-          Organisation, and Project to see your teams.
-        </p>
-      </div>
-    );
-  }
 
   const fetchData = async () => {
     await refreshIterations(teamId);
@@ -85,7 +74,7 @@ export function TeamIterations() {
             <strong>Start date:</strong> {data.startDate?.toDateString()}
             {" | "}
             <strong>End date:</strong> {data.endDate?.toDateString()}
-            <CsvDownloadButton teamName={data.teamName} iterationName={data.path} />
+            <CsvDownloadButton teamId={teamId} iterationId={iterationId} />
             <span className="text-sm text-gray-500">
               {" "}
               [ Last updated: {iterationDataLastUpdated.toLocaleString()}{" "}

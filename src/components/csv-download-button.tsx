@@ -1,15 +1,14 @@
 import React from "react";
 import { getIterationDataCsv } from "../managers/iterations-manager.js";
 
-export function CsvDownloadButton({ teamName, iterationName }: { teamName: string; iterationName: string }) {
+export function CsvDownloadButton({ teamId, iterationId }: { teamId: string; iterationId: string }) {
   async function handleDownloadCsv() {
     try {
-      const sanitisedIterationName = iterationName.replace("/", "-");
       const csv = await getIterationDataCsv();
       const blob = new Blob([csv], { type: "text/csv" });
       const link = document.createElement("a");
       link.href = window.URL.createObjectURL(blob);
-      link.download = `iteration-${teamName}-${sanitisedIterationName}.csv`;
+      link.download = `iteration-${teamId}-${iterationId}.csv`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

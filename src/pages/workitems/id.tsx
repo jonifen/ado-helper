@@ -52,6 +52,14 @@ export function WorkItemDetail() {
     loadWorkItem(Number(id));
   }, [id]);
 
+  useEffect(() => {
+    if (!data) return;
+    document.title = `${data.type} ${data.id} (ADO Helper)`;
+    return () => {
+      document.title = "ADO Helper";
+    };
+  }, [data]);
+
   if (!id) return <div>No work item ID provided.</div>;
 
   if (loading)
@@ -132,31 +140,42 @@ export function WorkItemDetail() {
           {data.children.length === 0 && (
             <i className="text-sm">No child work items</i>
           )}
-          <div className="flex flex-col gap-2">
-            {data.children.map((child) => (
-              <WorkItemSummaryCard
-                key={child.id}
-                workItem={child}
-                label="Child"
-              />
-            ))}
-          </div>
+          {data.children.length > 0 && (
+            <div className="flex flex-col gap-2 border-1 border-[#090b0c] rounded-md bg-[#161b1d] shadow-md p-2" title="Child work items">
+              {data.children.map((child) => (
+                <WorkItemSummaryCard
+                  key={child.id}
+                  workItem={child}
+                  label="Child"
+                />
+              ))}
+            </div>)}
         </div>
 
         <div>
           <h3 className="text-lg font-bold">Description</h3>
-          <RichTextSections
-            html={data.description}
-            emptyLabel="No description provided"
-          />
+          <div
+            className="border-1 border-[#090b0c] rounded-md bg-[#161b1d] shadow-md p-2"
+            title="Description"
+          >
+            <RichTextSections
+              html={data.description}
+              emptyLabel="No description provided"
+            />
+          </div>
         </div>
 
         <div>
           <h3 className="text-lg font-bold">Acceptance Criteria</h3>
-          <RichTextSections
-            html={data.acceptanceCriteria}
-            emptyLabel="No acceptance criteria provided"
-          />
+          <div
+            className="border-1 border-[#090b0c] rounded-md bg-[#161b1d] shadow-md p-2"
+            title="Acceptance Criteria"
+          >
+            <RichTextSections
+              html={data.acceptanceCriteria}
+              emptyLabel="No acceptance criteria provided"
+            />
+          </div>
         </div>
       </div>
     </div>
