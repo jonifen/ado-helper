@@ -15,6 +15,19 @@ export async function getDevOpsData<T>(url: string): Promise<T> {
   return data;
 }
 
+export async function getDevOpsBlobUrl(url: string): Promise<string> {
+  const { pat } = useSettingsStore.getState();
+  const headers: HeadersInit = { Authorization: `Basic ${pat}` };
+  const response = await fetch(url, { headers, cache: "no-store" });
+
+  if (!response.ok) {
+    throw new Error(`Error fetching image: ${response.statusText}`);
+  }
+
+  const blob = await response.blob();
+  return URL.createObjectURL(blob);
+}
+
 export async function postDevOpsData<T>(
   url: string,
   body?: string,

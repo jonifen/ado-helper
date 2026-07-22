@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@import "./fonts.css";
+
+* { font-family: 'Open Sans', ui-sans-serif, system-ui, sans-serif; }
 
 table { @apply border-collapse; } th, td { @apply border border-slate-600 p-1; }
 
@@ -6,7 +9,7 @@ table { @apply border-collapse; } th, td { @apply border border-slate-600 p-1; }
 .ado-rich-text :where(h1) { font-size: 1.5em; }
 .ado-rich-text :where(h2) { font-size: 1.3em; }
 .ado-rich-text :where(h3) { font-size: 1.15em; }
-.ado-rich-text :where(p) { margin: 0.5em 0; }
+.ado-rich-text :where(br) { display: block; content: ""; margin: 0.4em 0; }
 .ado-rich-text :where(ul, ol) { margin: 0.5em 0; padding-left: 1.5em; }
 .ado-rich-text :where(ul) { list-style-type: disc; }
 .ado-rich-text :where(ol) { list-style-type: decimal; }
@@ -22,3 +25,4 @@ table { @apply border-collapse; } th, td { @apply border border-slate-600 p-1; }
 .ado-rich-text :where(mark) { border-radius: 3px; padding: 0.05em 0.2em; }
 .ado-rich-text :where(mark[data-color="yellow"]) { background: rgba(217, 119, 6, 0.25); color: #fcd34d; }
 .ado-rich-text :where(mark[data-color="red"]) { background: rgba(220, 38, 38, 0.25); color: #fca5a5; }
+.ado-rich-text :where(img) { max-width: 100%; height: auto; border-radius: 0.25em; margin: 0.5em 0; }

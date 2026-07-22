@@ -6,7 +6,6 @@ export type RichTextSectionType = {
 };
 
 const HEADING_TAGS = new Set(["H1", "H2", "H3", "H4", "H5", "H6"]);
-const CONTAINER_TAGS = new Set(["DIV", "SECTION", "BODY", "SPAN"]);
 
 type BlockType =
   | { kind: "heading"; text: string; level: number }
@@ -52,7 +51,7 @@ function flattenCodeToText(el: Element): string {
   Array.from(el.childNodes).forEach(walk);
 
   return result
-    .replace(/ /g, " ")
+    .replace(/ /g, " ")
     .replace(/\n{3,}/g, "\n\n")
     .replace(/[ \t]+\n/g, "\n")
     .trim();
@@ -86,6 +85,22 @@ function normalizeCodeBlocks(root: ParentNode) {
     code.textContent = flattenCodeToText(codeEl);
     pre.appendChild(code);
     codeEl.replaceWith(pre);
+  }
+}
+
+// ADO's editor wraps prose in <p>/<div> inconsistently — the same sentence
+// can end up split across several of them (e.g. closing a <p> right before
+// a hyperlink and reopening a new one right after it), and since they're
+// block-level, each fragment renders as its own line instead of flowing as
+// one sentence. Rather than special-casing every way that manifests, every
+// <p> and <div> is unwrapped (replaced by its own children in place),
+// leaving only the real line/paragraph breaks that ADO already represents
+// explicitly as <br> elements. Lists, tables and code blocks are untouched
+// since they're never <p>/<div> themselves.
+function unwrapProseContainers(root: Element) {
+  let el: Element | null;
+  while ((el = root.querySelector("p, div"))) {
+    el.replaceWith(...Array.from(el.childNodes));
   }
 }
 
@@ -145,10 +160,9 @@ function applyHighlightMarks(root: Element) {
   }
 }
 
-// Applied per-section, after splitting, rather than on the whole document
-// up front: mutating text nodes into <mark> elements changes which
-// top-level <div>s have element children, which would otherwise confuse
-// collectBlocks' wrapper-unwrapping heuristic.
+// Applied per-section, after splitting, so it only ever needs to reason
+// about one section's already-finalized HTML rather than the whole
+// document mid-normalization.
 function applyHighlightsToHtml(html: string): string {
   if (!html) return html;
   const doc = new DOMParser().parseFromString(html, "text/html");
@@ -156,16 +170,20 @@ function applyHighlightsToHtml(html: string): string {
   return doc.body.innerHTML;
 }
 
+function escapeHtml(text: string): string {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
 function collectBlocks(node: Node, blocks: BlockType[]) {
   for (const child of Array.from(node.childNodes)) {
     if (child.nodeType === Node.TEXT_NODE) {
-      const text = child.textContent?.trim();
-      if (text) {
-        blocks.push({
-          kind: "content",
-          html: HR_TEXT.test(text) ? "<hr />" : `<p>${text}</p>`,
-        });
-      }
+      const raw = child.textContent || "";
+      const trimmed = raw.trim();
+      if (!trimmed) continue;
+      blocks.push({
+        kind: "content",
+        html: HR_TEXT.test(trimmed) ? "<hr />" : escapeHtml(raw),
+      });
       continue;
     }
 
@@ -180,13 +198,13 @@ function collectBlocks(node: Node, blocks: BlockType[]) {
         text: el.textContent?.trim() || "",
         level: Number(tag[1]),
       });
-    } else if (CONTAINER_TAGS.has(tag) && el.children.length > 0) {
-      // Unwrap wrapper elements (e.g. a single outer <div>) so headings
-      // nested inside them are still treated as section boundaries.
+    } else if (tag === "SPAN" && el.children.length > 0) {
+      // Defensive unwrap for the rare case a heading ends up nested one
+      // level inside a wrapping <span>.
       collectBlocks(el, blocks);
-    } else if (tag !== "HR" && el.children.length === 0 && HR_TEXT.test(el.textContent?.trim() || "")) {
-      // A line typed as a literal "---" (e.g. inside a <p>) reads as a
-      // horizontal rule, not literal dashes.
+    } else if (el.children.length === 0 && HR_TEXT.test(el.textContent?.trim() || "")) {
+      // A line typed as a literal "---" reads as a horizontal rule, not
+      // literal dashes.
       blocks.push({ kind: "content", html: "<hr />" });
     } else {
       blocks.push({ kind: "content", html: el.outerHTML });
@@ -238,6 +256,7 @@ export function parseRichTextSections(html: string): RichTextSectionType[] {
 
   const doc = new DOMParser().parseFromString(html, "text/html");
   normalizeCodeBlocks(doc.body);
+  unwrapProseContainers(doc.body);
   const blocks: BlockType[] = [];
   collectBlocks(doc.body, blocks);
 

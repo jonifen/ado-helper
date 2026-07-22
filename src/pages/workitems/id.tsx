@@ -12,18 +12,7 @@ function WorkItemSummaryCard({
   workItem: WorkItemSummaryType;
   label: string;
 }) {
-  const { pat, organisation, project } = useSettingsStore((state) => state);
-
-  if (!pat || !organisation || !project) {
-    return (
-      <div className="font-sans items-center justify-items-center min-h-screen px-8 py-3">
-        <p>
-          Please go to the Settings page and enter your Personal Access Token,
-          Organisation, and Project to see your teams.
-        </p>
-      </div>
-    );
-  }
+  const { organisation, project } = useSettingsStore((state) => state);
 
   return (
     <div className="border-1 border-[#16292B] rounded-md p-2 text-sm bg-[#1B3336] shadow-md">
@@ -41,10 +30,8 @@ function WorkItemSummaryCard({
           </a>
         </div>
         <div className="flex-1">{workItem.title}</div>
-        <div className="flex-0 text-nowrap">{workItem.type}</div>
-        <div className="flex-0 text-nowrap">{workItem.state}</div>
         <div className="flex-0 text-nowrap">
-          {workItem.assignedTo || "Unassigned"}
+          {workItem.type} &middot; {workItem.state} &middot; {workItem.assignedTo || "Unassigned"}
         </div>
       </div>
     </div>
@@ -56,7 +43,7 @@ export function WorkItemDetail() {
   const { data, loading, error, loadWorkItem } = useWorkItemStore(
     (state) => state,
   );
-  const { organisation, project } = useSettingsStore((state) => state);
+  const { pat, organisation, project } = useSettingsStore((state) => state);
 
   useEffect(() => {
     if (!id) return;
@@ -70,6 +57,17 @@ export function WorkItemDetail() {
       document.title = "ADO Helper";
     };
   }, [data]);
+
+  if (!pat || !organisation || !project) {
+    return (
+      <div className="font-sans items-center justify-items-center min-h-screen px-8 py-3">
+        <p>
+          Please go to the Settings page and enter your Personal Access Token,
+          Organisation, and Project to use this tool.
+        </p>
+      </div>
+    );
+  }
 
   if (!id) return <div>No work item ID provided.</div>;
 

@@ -12,7 +12,7 @@ describe("parseRichTextSections", () => {
     const sections = parseRichTextSections("<p>Just some content</p>");
     expect(sections).toHaveLength(1);
     expect(sections[0]?.heading).toBeNull();
-    expect(sections[0]?.html).toBe("<p>Just some content</p>");
+    expect(sections[0]?.html).toBe("Just some content");
   });
 
   it("splits content into one section per heading", () => {
@@ -22,21 +22,21 @@ describe("parseRichTextSections", () => {
 
     expect(sections).toHaveLength(2);
     expect(sections[0]).toMatchObject({ heading: "Background", level: 2 });
-    expect(sections[0]?.html).toBe("<p>Some context</p>");
+    expect(sections[0]?.html).toBe("Some context");
     expect(sections[1]).toMatchObject({ heading: "Steps", level: 2 });
-    expect(sections[1]?.html).toContain("<li>One</li>");
+    expect(sections[1]?.html).toBe("<ul><li>One</li><li>Two</li></ul>");
   });
 
-  it("unwraps a single outer wrapper div so nested headings still split", () => {
+  it("unwraps nested wrapper divs (any depth) so nested headings still split", () => {
     const html =
-      "<div><h3>First</h3><p>A</p><h3>Second</h3><p>B</p></div>";
+      "<div><div><h3>First</h3><p>A</p></div><h3>Second</h3><p>B</p></div>";
     const sections = parseRichTextSections(html);
 
     expect(sections).toHaveLength(2);
     expect(sections[0]?.heading).toBe("First");
-    expect(sections[0]?.html).toBe("<p>A</p>");
+    expect(sections[0]?.html).toBe("A");
     expect(sections[1]?.heading).toBe("Second");
-    expect(sections[1]?.html).toBe("<p>B</p>");
+    expect(sections[1]?.html).toBe("B");
   });
 
   it("keeps leading content before the first heading as a headless section", () => {
@@ -45,8 +45,9 @@ describe("parseRichTextSections", () => {
 
     expect(sections).toHaveLength(2);
     expect(sections[0]?.heading).toBeNull();
-    expect(sections[0]?.html).toBe("<p>Intro</p>");
+    expect(sections[0]?.html).toBe("Intro");
     expect(sections[1]?.heading).toBe("Details");
+    expect(sections[1]?.html).toBe("More");
   });
 
   it("converts a literal '---' line into a horizontal rule", () => {
@@ -54,16 +55,22 @@ describe("parseRichTextSections", () => {
     expect(parseRichTextSections("<div>---</div>")[0]?.html).toBe("<hr>");
   });
 
+  it("preserves explicit <br> line breaks once <p>/<div> wrappers are gone", () => {
+    const html = "<div>Line one</div><div><br> </div><div>Line two</div>";
+    const sections = parseRichTextSections(html);
+    expect(sections[0]?.html).toBe("Line one<br>Line two");
+  });
+
   it("leaves genuinely inline code untouched", () => {
     const sections = parseRichTextSections("<p>Call <code>foo()</code> first</p>");
-    expect(sections[0]?.html).toBe("<p>Call <code>foo()</code> first</p>");
+    expect(sections[0]?.html).toBe("Call <code>foo()</code> first");
   });
 
   it("collapses redundant nested code tags to a single inline code element", () => {
     const sections = parseRichTextSections(
       "<p><code><code><code>RestHrefResponse</code></code></code></p>",
     );
-    expect(sections[0]?.html).toBe("<p><code>RestHrefResponse</code></p>");
+    expect(sections[0]?.html).toBe("<code>RestHrefResponse</code>");
   });
 
   it("converts a multi-line <code> using <br> into a <pre><code> block, preserving every line", () => {
@@ -95,27 +102,27 @@ describe("parseRichTextSections", () => {
   it("converts ==text== into a yellow highlight mark", () => {
     const sections = parseRichTextSections("<p>This is ==important== info</p>");
     expect(sections[0]?.html).toBe(
-      '<p>This is <mark data-color="yellow">important</mark> info</p>',
+      'This is <mark data-color="yellow">important</mark> info',
     );
   });
 
   it("converts !!text!! into a red highlight mark", () => {
     const sections = parseRichTextSections("<p>This is !!urgent!! info</p>");
     expect(sections[0]?.html).toBe(
-      '<p>This is <mark data-color="red">urgent</mark> info</p>',
+      'This is <mark data-color="red">urgent</mark> info',
     );
   });
 
   it("handles multiple highlights of both colors in one line", () => {
     const sections = parseRichTextSections("<p>==one== and !!two!! and ==three==</p>");
     expect(sections[0]?.html).toBe(
-      '<p><mark data-color="yellow">one</mark> and <mark data-color="red">two</mark> and <mark data-color="yellow">three</mark></p>',
+      '<mark data-color="yellow">one</mark> and <mark data-color="red">two</mark> and <mark data-color="yellow">three</mark>',
     );
   });
 
   it("does not apply highlight syntax inside code blocks", () => {
     const sections = parseRichTextSections("<p>Call <code>a==b==c</code> now</p>");
-    expect(sections[0]?.html).toBe("<p>Call <code>a==b==c</code> now</p>");
+    expect(sections[0]?.html).toBe("Call <code>a==b==c</code> now");
   });
 
   it("does not apply highlight syntax inside converted pre/code blocks", () => {
@@ -123,5 +130,28 @@ describe("parseRichTextSections", () => {
     const sections = parseRichTextSections(`<ul>${html}</ul>`);
     expect(sections[0]?.html).not.toContain("<mark");
     expect(sections[0]?.html).toContain("==not a highlight==");
+  });
+
+  it("keeps a hyperlink inline with the sentence around it, even when ADO splits the <p> around it", () => {
+    // The real-world bug report: ADO closes the current <p> right before
+    // a hyperlink and reopens a new one right after it.
+    const html =
+      '<p>Some text -</p><a href="https://example.com">https://example.com</a><p>) the rest of the sentence.</p>';
+    const sections = parseRichTextSections(html);
+
+    expect(sections).toHaveLength(1);
+    expect(sections[0]?.html).toBe(
+      'Some text -<a href="https://example.com">https://example.com</a>) the rest of the sentence.',
+    );
+  });
+
+  it("keeps a standalone hyperlink exactly where it was", () => {
+    const html =
+      '<div>Intro</div><br><a href="https://example.com">Standalone link</a><br><div>Outro</div>';
+    const sections = parseRichTextSections(html);
+
+    expect(sections[0]?.html).toBe(
+      'Intro<br><a href="https://example.com">Standalone link</a><br>Outro',
+    );
   });
 });
