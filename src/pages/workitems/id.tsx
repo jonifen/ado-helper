@@ -3,7 +3,9 @@ import { Link, useParams } from "react-router-dom";
 import { useSettingsStore } from "../../data/settings-store.js";
 import { useWorkItemStore } from "../../data/workitem-store.js";
 import { RichTextSections } from "../../components/rich-text-sections.js";
+import { WorkItemTimeline } from "../../components/workitem-timeline.js";
 import type { WorkItemSummaryType } from "../../managers/workitem-manager-types.js";
+import { Tag } from "../../components/tag.js";
 
 function WorkItemSummaryCard({
   workItem,
@@ -131,9 +133,11 @@ export function WorkItemDetail() {
 
         {data.tags.length > 0 && (
           <div className="text-sm">
-            <strong className="text-[#9BCF69]">Tags:</strong> {data.tags.join(", ")}
+            <strong className="text-[#9BCF69]">Tags:</strong> {data.tags.map((tag) => <Tag key={tag} value={tag} />)}
           </div>
         )}
+
+        <WorkItemTimeline timeline={data.timeline} />
 
         <div>
           <h3 className="text-lg font-bold text-[#9BCF69]">Parent</h3>

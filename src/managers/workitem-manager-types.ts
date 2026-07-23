@@ -17,6 +17,11 @@ export type WorkItemCommentDetailType = {
   html: string;
 };
 
+export type WorkItemTimelineType = {
+  createdDate: Date | null;
+  transitions: { state: string; date: Date }[];
+};
+
 export type WorkItemDetailType = WorkItemSummaryType & {
   description: string;
   acceptanceCriteria: string;
@@ -25,4 +30,5 @@ export type WorkItemDetailType = WorkItemSummaryType & {
   parent: WorkItemSummaryType | null;
   children: WorkItemSummaryType[];
   comments: WorkItemCommentDetailType[];
+  timeline: WorkItemTimelineType;
 };

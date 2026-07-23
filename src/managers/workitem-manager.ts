@@ -2,6 +2,7 @@ import {
   getWorkItemById,
   getWorkItemComments,
   getWorkItemsByIds,
+  getWorkItemUpdates,
 } from "../data/api/workitems.js";
 import type {
   WorkItemCommentType,
@@ -11,7 +12,9 @@ import type {
   WorkItemCommentDetailType,
   WorkItemDetailType,
   WorkItemSummaryType,
+  WorkItemTimelineType,
 } from "./workitem-manager-types.js";
+import { getStateTransitions } from "../utils/state-transitions.js";
 
 const PARENT_REL = "System.LinkTypes.Hierarchy-Reverse";
 const CHILD_REL = "System.LinkTypes.Hierarchy-Forward";
@@ -60,10 +63,18 @@ export async function getWorkItemDetail(
     .map((relation) => getIdFromRelationUrl(relation.url));
 
   const relatedIds = [...(parentId ? [parentId] : []), ...childIds];
-  const [relatedWorkItems, comments] = await Promise.all([
+  const [relatedWorkItems, comments, updates] = await Promise.all([
     relatedIds.length ? getWorkItemsByIds(relatedIds) : { count: 0, value: [] },
     getWorkItemComments(workItemId),
+    getWorkItemUpdates(workItemId),
   ]);
+
+  const timeline: WorkItemTimelineType = {
+    createdDate: workItem.fields["System.CreatedDate"]
+      ? new Date(workItem.fields["System.CreatedDate"])
+      : null,
+    transitions: getStateTransitions(updates),
+  };
 
   const parent = parentId
     ? relatedWorkItems.value.find((item) => item.id === parentId)
@@ -88,5 +99,6 @@ export async function getWorkItemDetail(
     comments: comments
       .map(mapComment)
       .sort((a, b) => b.createdDate.valueOf() - a.createdDate.valueOf()),
+    timeline,
   };
 }

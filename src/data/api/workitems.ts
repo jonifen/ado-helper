@@ -63,11 +63,26 @@ export async function getWorkItemRevisions(
   return data.value;
 }
 
+const UPDATES_PAGE_SIZE = 200;
+
 export async function getWorkItemUpdates(
   workItemId: number,
 ): Promise<WorkItemUpdateType[]> {
   const { organisation, project } = useSettingsStore.getState();
-  const url = `https://dev.azure.com/${organisation}/${project}/_apis/wit/workItems/${workItemId}/updates?api-version=7.1`;
-  const data = await getDevOpsData<{ value: WorkItemUpdateType[] }>(url);
-  return data.value;
+  const allUpdates: WorkItemUpdateType[] = [];
+  let skip = 0;
+
+  // The updates endpoint pages its results — without $top/$skip it only
+  // returns the first 200 revisions, silently dropping the rest. Keep
+  // paging until a page comes back shorter than the requested size.
+  while (true) {
+    const url = `https://dev.azure.com/${organisation}/${project}/_apis/wit/workItems/${workItemId}/updates?$top=${UPDATES_PAGE_SIZE}&$skip=${skip}&api-version=7.1`;
+    const data = await getDevOpsData<{ value: WorkItemUpdateType[] }>(url);
+    allUpdates.push(...data.value);
+
+    if (data.value.length < UPDATES_PAGE_SIZE) break;
+    skip += UPDATES_PAGE_SIZE;
+  }
+
+  return allUpdates;
 }

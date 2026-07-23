@@ -11,6 +11,7 @@ import {
 } from "../data/api/workitems.js";
 import type { WorkItemDataType } from "../data/api/workitems-types.js";
 import { sortWorkItemsByState } from "../utils/workitem-sort.js";
+import { getUpdateDate } from "../utils/state-transitions.js";
 import { getTeam } from "../data/api/teams.js";
 import { generateCsv } from "../utils/csv-generation.js";
 import type {
@@ -127,7 +128,7 @@ async function mapWorkItems(
         if (update.fields && update.fields["System.State"]) {
           const stateChange = update.fields["System.State"];
           if (stateChange.newValue === "Active") {
-            activatedDate = new Date(update.revisedDate!);
+            activatedDate = getUpdateDate(update);
             break; // Found the first time it changed to Active
           }
         }
