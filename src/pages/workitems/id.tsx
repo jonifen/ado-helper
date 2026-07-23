@@ -15,7 +15,7 @@ function WorkItemSummaryCard({
   const { organisation, project } = useSettingsStore((state) => state);
 
   return (
-    <div className="border-1 border-[#16292B] rounded-md p-2 text-sm bg-[#1B3336] shadow-md">
+    <div className="border-1 border-[#13172B] rounded-md p-2 text-sm bg-[#292E42] shadow-md">
       <div className="text-xs text-gray-400">{label}</div>
       <div className="flex flex-row gap-2 items-baseline">
         <div className="flex-0 min-w-16">
@@ -106,37 +106,37 @@ export function WorkItemDetail() {
 
         <div className="flex flex-row gap-8 text-sm w-fill">
           <div>
-            <strong>State</strong><br />{data.state}
+            <strong className="text-[#9BCF69]">State</strong><br />{data.state}
           </div>
           <div>
-            <strong>Assigned to</strong><br />{data.assignedTo || "Unassigned"}
+            <strong className="text-[#9BCF69]">Assigned to</strong><br />{data.assignedTo || "Unassigned"}
           </div>
           <div>
-            <strong>Points</strong><br />{data.points ?? "N/A"}
+            <strong className="text-[#9BCF69]">Points</strong><br />{data.points ?? "N/A"}
           </div>
           <div>
-            <strong>Original estimate</strong><br />
+            <strong className="text-[#9BCF69]">Original estimate</strong><br />
             {data.originalEstimate ?? "N/A"} hrs
           </div>
           <div>
-            <strong>Remaining</strong><br />{data.remaining ?? "N/A"} hrs
+            <strong className="text-[#9BCF69]">Remaining</strong><br />{data.remaining ?? "N/A"} hrs
           </div>
           <div>
-            <strong>Completed</strong><br />{data.completed ?? "N/A"} hrs
+            <strong className="text-[#9BCF69]">Completed</strong><br />{data.completed ?? "N/A"} hrs
           </div>
           <div>
-            <strong>Iteration</strong><br />{data.iterationPath || "N/A"}
+            <strong className="text-[#9BCF69]">Iteration</strong><br />{data.iterationPath || "N/A"}
           </div>
         </div>
 
         {data.tags.length > 0 && (
           <div className="text-sm">
-            <strong>Tags:</strong> {data.tags.join(", ")}
+            <strong className="text-[#9BCF69]">Tags:</strong> {data.tags.join(", ")}
           </div>
         )}
 
         <div>
-          <h3 className="text-lg font-bold">Parent</h3>
+          <h3 className="text-lg font-bold text-[#9BCF69]">Parent</h3>
           {data.parent ? (
             <WorkItemSummaryCard workItem={data.parent} label="Parent" />
           ) : (
@@ -145,12 +145,12 @@ export function WorkItemDetail() {
         </div>
 
         <div>
-          <h3 className="text-lg font-bold">Children</h3>
+          <h3 className="text-lg font-bold text-[#9BCF69]">Children</h3>
           {data.children.length === 0 && (
             <i className="text-sm">No child work items</i>
           )}
           {data.children.length > 0 && (
-            <div className="flex flex-col gap-2 border-1 border-[#090b0c] rounded-md bg-[#161b1d] shadow-md p-2" title="Child work items">
+            <div className="flex flex-col gap-2 border-1 border-[#33373C] rounded-md bg-[#33373C] shadow-md p-2" title="Child work items">
               {data.children.map((child) => (
                 <WorkItemSummaryCard
                   key={child.id}
@@ -162,9 +162,9 @@ export function WorkItemDetail() {
         </div>
 
         <div>
-          <h3 className="text-lg font-bold">Description</h3>
+          <h3 className="text-lg font-bold text-[#9BCF69]">Description</h3>
           <div
-            className="border-1 border-[#090b0c] rounded-md bg-[#161b1d] shadow-md p-2"
+            className="border-1 border-[#33373C] rounded-md bg-[#33373C] shadow-md p-2"
             title="Description"
           >
             <RichTextSections
@@ -175,9 +175,9 @@ export function WorkItemDetail() {
         </div>
 
         <div>
-          <h3 className="text-lg font-bold">Acceptance Criteria</h3>
+          <h3 className="text-lg font-bold text-[#9BCF69]">Acceptance Criteria</h3>
           <div
-            className="border-1 border-[#090b0c] rounded-md bg-[#161b1d] shadow-md p-2"
+            className="border-1 border-[#33373C] rounded-md bg-[#33373C] shadow-md p-2"
             title="Acceptance Criteria"
           >
             <RichTextSections
@@ -185,6 +185,31 @@ export function WorkItemDetail() {
               emptyLabel="No acceptance criteria provided"
             />
           </div>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-bold text-[#9BCF69]">Comments</h3>
+          {data.comments.length === 0 ? (
+            <i className="text-sm">No comments</i>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {data.comments.map((comment) => (
+                <div
+                  key={comment.id}
+                  className="border-1 border-[#33373C] rounded-md bg-[#33373C] shadow-md p-2"
+                >
+                  <div className="text-xs text-gray-400 mb-1">
+                    <strong>{comment.author}</strong>{" "}
+                    &middot; {comment.createdDate.toLocaleString()}
+                  </div>
+                  <RichTextSections
+                    html={comment.html}
+                    emptyLabel="No comment text"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

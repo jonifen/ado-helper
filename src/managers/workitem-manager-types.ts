@@ -10,6 +10,13 @@ export type WorkItemSummaryType = {
   completed: number | null;
 };
 
+export type WorkItemCommentDetailType = {
+  id: number;
+  author: string;
+  createdDate: Date;
+  html: string;
+};
+
 export type WorkItemDetailType = WorkItemSummaryType & {
   description: string;
   acceptanceCriteria: string;
@@ -17,4 +24,5 @@ export type WorkItemDetailType = WorkItemSummaryType & {
   iterationPath: string;
   parent: WorkItemSummaryType | null;
   children: WorkItemSummaryType[];
+  comments: WorkItemCommentDetailType[];
 };

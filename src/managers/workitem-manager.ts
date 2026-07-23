@@ -1,6 +1,14 @@
-import { getWorkItemById, getWorkItemsByIds } from "../data/api/workitems.js";
-import type { WorkItemDataType } from "../data/api/workitems-types.js";
+import {
+  getWorkItemById,
+  getWorkItemComments,
+  getWorkItemsByIds,
+} from "../data/api/workitems.js";
 import type {
+  WorkItemCommentType,
+  WorkItemDataType,
+} from "../data/api/workitems-types.js";
+import type {
+  WorkItemCommentDetailType,
   WorkItemDetailType,
   WorkItemSummaryType,
 } from "./workitem-manager-types.js";
@@ -10,6 +18,15 @@ const CHILD_REL = "System.LinkTypes.Hierarchy-Forward";
 
 function getIdFromRelationUrl(url: string): number {
   return Number(url.substring(url.lastIndexOf("/") + 1));
+}
+
+function mapComment(comment: WorkItemCommentType): WorkItemCommentDetailType {
+  return {
+    id: comment.id,
+    author: comment.createdBy?.displayName || "Unknown",
+    createdDate: new Date(comment.createdDate),
+    html: comment.text || "",
+  };
 }
 
 function mapWorkItemSummary(workItem: WorkItemDataType): WorkItemSummaryType {
@@ -43,9 +60,10 @@ export async function getWorkItemDetail(
     .map((relation) => getIdFromRelationUrl(relation.url));
 
   const relatedIds = [...(parentId ? [parentId] : []), ...childIds];
-  const relatedWorkItems = relatedIds.length
-    ? await getWorkItemsByIds(relatedIds)
-    : { count: 0, value: [] };
+  const [relatedWorkItems, comments] = await Promise.all([
+    relatedIds.length ? getWorkItemsByIds(relatedIds) : { count: 0, value: [] },
+    getWorkItemComments(workItemId),
+  ]);
 
   const parent = parentId
     ? relatedWorkItems.value.find((item) => item.id === parentId)
@@ -67,5 +85,8 @@ export async function getWorkItemDetail(
     iterationPath: workItem.fields["System.IterationPath"] || "",
     parent: parent ? mapWorkItemSummary(parent) : null,
     children: children.map(mapWorkItemSummary),
+    comments: comments
+      .map(mapComment)
+      .sort((a, b) => b.createdDate.valueOf() - a.createdDate.valueOf()),
   };
 }

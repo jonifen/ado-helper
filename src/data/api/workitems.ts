@@ -1,6 +1,8 @@
 import { getDevOpsData, postDevOpsData } from "./ado-client.js";
 import { useSettingsStore } from "../settings-store.js";
 import type {
+  WorkItemCommentsResponseType,
+  WorkItemCommentType,
   WorkItemDataType,
   WorkItemResponseType,
   WorkItemRevisionType,
@@ -41,6 +43,15 @@ export async function getWorkItemById(
   const { organisation, project } = useSettingsStore.getState();
   const url = `https://dev.azure.com/${organisation}/${project}/_apis/wit/workitems/${workItemId}?$expand=all&api-version=7.1`;
   return await getDevOpsData<WorkItemDataType>(url);
+}
+
+export async function getWorkItemComments(
+  workItemId: number,
+): Promise<WorkItemCommentType[]> {
+  const { organisation, project } = useSettingsStore.getState();
+  const url = `https://dev.azure.com/${organisation}/${project}/_apis/wit/workItems/${workItemId}/comments?api-version=7.1-preview`;
+  const data = await getDevOpsData<WorkItemCommentsResponseType>(url);
+  return data.comments;
 }
 
 export async function getWorkItemRevisions(

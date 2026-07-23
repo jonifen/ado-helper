@@ -57,7 +57,7 @@ export function RichTextSections({
       {sections.map((section) => (
         <div
           key={section.id}
-          className="border-1 border-[#16292B] rounded-md bg-[#1B3336] shadow-md p-2"
+          className="border-1 border-[#16292B] rounded-md bg-[#292E42] shadow-md p-2"
         >
           {section.heading && (
             <h4 className="text-base font-bold mb-1">{section.heading}</h4>

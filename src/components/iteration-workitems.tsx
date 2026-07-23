@@ -26,7 +26,7 @@ export const IterationWorkitems = ({
         return (
           <div
             key={story.id}
-            className="border-1 border-[#16292B] rounded-md mb-3 p-2 text-sm bg-[#1B3336] shadow-md"
+            className="border-1 border-[#13172B] rounded-md mb-3 p-2 text-sm bg-[#292E42] shadow-md"
           >
             <div className="flex flex-row gap-2">
               <div className="flex-0 min-w-20 text-nowrap">
@@ -53,7 +53,7 @@ export const IterationWorkitems = ({
                 {story.title}
               </div>
             </div>
-            <div className="pl-22 my-2 bg-[#1F3D40]">
+            <div className="pl-22 my-2 bg-[#1B1E2E]">
               <div className="flex flex-row gap-2 font-bold">
                 <div className="flex-1">Tasks</div>
                 <div className="min-w-12">Est.</div>
@@ -75,7 +75,7 @@ export const IterationWorkitems = ({
                 return (
                   <div
                     key={task.id}
-                    className={`flex flex-row gap-2 ${Math.abs(taskIndex % 2) === 1 ? "bg-[#23474A]" : ""}`}
+                    className={`flex flex-row gap-2 ${Math.abs(taskIndex % 2) === 1 ? "bg-[#24283B]" : ""}`}
                   >
                     <div className="flex-0 min-w-16">
                       <Link to={`/workitems/${task.id}`}>{task.id}</Link>{" "}

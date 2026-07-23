@@ -19,8 +19,8 @@ table { @apply border-collapse; } th, td { @apply border border-slate-600 p-1; }
 .ado-rich-text :where(strong, b) { font-weight: bold; }
 .ado-rich-text :where(em, i) { font-style: italic; }
 .ado-rich-text :where(hr) { border: none; border-top: 1px solid #45696c; margin: 0.75em 0; }
-.ado-rich-text :where(code) { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background-color: #2b2b2b; color: #e8e8e8; padding: 0.1em 0.4em; border-radius: 0.25em; font-size: 0.9em; }
-.ado-rich-text :where(pre) { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background-color: #2b2b2b; color: #e8e8e8; padding: 0.75em; border-radius: 0.375em; margin: 0.5em 0; overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
+.ado-rich-text :where(code) { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background-color: #1F2335; color: #BEC9F5; padding: 0.1em 0.4em; border-radius: 0.25em; font-size: 0.9em; }
+.ado-rich-text :where(pre) { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background-color: #1F2335; color: #BEC9F5; padding: 0.75em; border-radius: 0.375em; margin: 0.5em 0; overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
 .ado-rich-text :where(pre code) { background-color: transparent; padding: 0; border-radius: 0; font-size: 1em; }
 .ado-rich-text :where(mark) { border-radius: 3px; padding: 0.05em 0.2em; }
 .ado-rich-text :where(mark[data-color="yellow"]) { background: rgba(217, 119, 6, 0.25); color: #fcd34d; }

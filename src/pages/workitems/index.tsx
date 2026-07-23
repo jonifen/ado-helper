@@ -26,7 +26,7 @@ export function WorkItemsSearch() {
       <div className="font-sans items-center justify-items-center min-h-screen px-8 py-3">
         <p>
           Please go to the Settings page and enter your Personal Access Token,
-          Organisation, and Project to see your teams.
+          Organisation, and Project to use this tool.
         </p>
       </div>
     );
@@ -72,7 +72,7 @@ export function WorkItemsSearch() {
           <button
             type="submit"
             disabled={!input}
-            className="px-2 py-1 border border-teal-500 text-teal-500 text-sm rounded hover:bg-teal-500 hover:text-black transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-teal-500"
+            className="px-2 py-1 border border-[#9CCB69] text-[#9CCB69] text-sm rounded hover:bg-[#9CCB69] hover:text-black transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-[#9CCB69]"
           >
             Search
           </button>
@@ -87,7 +87,7 @@ export function WorkItemsSearch() {
         )}
 
         {!loading && !error && submittedId !== null && data && (
-          <div className="border-1 border-[#16292B] rounded-md p-2 text-sm bg-[#1B3336] shadow-md max-w-xl flex flex-row items-center gap-3">
+          <div className="border-1 border-[#13172B] rounded-md p-2 text-sm bg-[#292E42] shadow-md max-w-xl flex flex-row items-center gap-3">
             <div className="flex-1">
               <div>
                 <strong>ID:</strong> {data.id}

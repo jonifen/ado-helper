@@ -104,11 +104,15 @@ function unwrapProseContainers(root: Element) {
   }
 }
 
-// `==text==` and `!!text!!` aren't understood by ADO's rich-text editor
-// either — they pass through as literal text — so they're converted into
-// <mark data-color> highlights the same way as the equivalent feature in
-// the second-brain project, skipping any text inside code/pre.
-const HIGHLIGHT_RE = /==([^=\n]+)==|!!([^!\n]+)!!/g;
+// `==text==`, `!!text!!` and `` `text` `` aren't understood by ADO's
+// rich-text editor either — they pass through as literal text — so
+// they're converted into <mark data-color>/<code> spans. The highlight
+// syntax mirrors the equivalent feature in the second-brain project; the
+// backtick syntax mirrors Markdown's inline code. All three are inline
+// replacements within a text node, so the result never forces a line
+// break mid-sentence — it's excluded from any text already inside
+// code/pre so existing code spans aren't reprocessed.
+const INLINE_MARKUP_RE = /`([^`\n]+)`|==([^=\n]+)==|!!([^!\n]+)!!/g;
 
 function isInsideCodeOrPre(node: Node): boolean {
   let el = node.parentElement;
@@ -119,7 +123,7 @@ function isInsideCodeOrPre(node: Node): boolean {
   return false;
 }
 
-function applyHighlightMarks(root: Element) {
+function applyInlineMarkup(root: Element) {
   const doc = root.ownerDocument;
   const walker = doc.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
     acceptNode(n: Node) {
@@ -135,22 +139,30 @@ function applyHighlightMarks(root: Element) {
 
   for (const textNode of textNodes) {
     const text = textNode.textContent || "";
-    HIGHLIGHT_RE.lastIndex = 0;
-    if (!HIGHLIGHT_RE.test(text)) continue;
-    HIGHLIGHT_RE.lastIndex = 0;
+    INLINE_MARKUP_RE.lastIndex = 0;
+    if (!INLINE_MARKUP_RE.test(text)) continue;
+    INLINE_MARKUP_RE.lastIndex = 0;
 
     const frag = doc.createDocumentFragment();
     let lastIndex = 0;
     let match: RegExpExecArray | null;
-    while ((match = HIGHLIGHT_RE.exec(text)) !== null) {
+    while ((match = INLINE_MARKUP_RE.exec(text)) !== null) {
       if (match.index > lastIndex) {
         frag.appendChild(doc.createTextNode(text.slice(lastIndex, match.index)));
       }
-      const isYellow = match[1] !== undefined;
-      const mark = doc.createElement("mark");
-      mark.setAttribute("data-color", isYellow ? "yellow" : "red");
-      mark.textContent = (isYellow ? match[1] : match[2]) || "";
-      frag.appendChild(mark);
+
+      if (match[1] !== undefined) {
+        const code = doc.createElement("code");
+        code.textContent = match[1];
+        frag.appendChild(code);
+      } else {
+        const isYellow = match[2] !== undefined;
+        const mark = doc.createElement("mark");
+        mark.setAttribute("data-color", isYellow ? "yellow" : "red");
+        mark.textContent = (isYellow ? match[2] : match[3]) || "";
+        frag.appendChild(mark);
+      }
+
       lastIndex = match.index + match[0].length;
     }
     if (lastIndex < text.length) {
@@ -163,10 +175,10 @@ function applyHighlightMarks(root: Element) {
 // Applied per-section, after splitting, so it only ever needs to reason
 // about one section's already-finalized HTML rather than the whole
 // document mid-normalization.
-function applyHighlightsToHtml(html: string): string {
+function applyInlineMarkupToHtml(html: string): string {
   if (!html) return html;
   const doc = new DOMParser().parseFromString(html, "text/html");
-  applyHighlightMarks(doc.body);
+  applyInlineMarkup(doc.body);
   return doc.body.innerHTML;
 }
 
@@ -262,6 +274,6 @@ export function parseRichTextSections(html: string): RichTextSectionType[] {
 
   return buildSections(blocks).map((section) => ({
     ...section,
-    html: applyHighlightsToHtml(section.html),
+    html: applyInlineMarkupToHtml(section.html),
   }));
 }

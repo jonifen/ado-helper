@@ -154,4 +154,36 @@ describe("parseRichTextSections", () => {
       'Intro<br><a href="https://example.com">Standalone link</a><br>Outro',
     );
   });
+
+  it("converts `text` into an inline code span without breaking the surrounding sentence", () => {
+    const sections = parseRichTextSections("<p>Run `npm install` before starting</p>");
+    expect(sections[0]?.html).toBe(
+      "Run <code>npm install</code> before starting",
+    );
+  });
+
+  it("converts multiple backtick spans on one line", () => {
+    const sections = parseRichTextSections("<p>Use `foo` not `bar`</p>");
+    expect(sections[0]?.html).toBe("Use <code>foo</code> not <code>bar</code>");
+  });
+
+  it("handles backtick code and highlight syntax together in one line", () => {
+    const sections = parseRichTextSections("<p>Run `build` then ==deploy==</p>");
+    expect(sections[0]?.html).toBe(
+      'Run <code>build</code> then <mark data-color="yellow">deploy</mark>',
+    );
+  });
+
+  it("does not convert backticks inside an existing code block", () => {
+    const sections = parseRichTextSections("<p>Call <code>`not code`</code> now</p>");
+    expect(sections[0]?.html).toBe("Call <code>`not code`</code> now");
+  });
+
+  it("does not treat an unmatched single backtick as code", () => {
+    const sections = parseRichTextSections("<p>It's a bit `off` here, isn't it</p>");
+    expect(sections[0]?.html).toBe("It's a bit <code>off</code> here, isn't it");
+    // Confirms only the balanced pair is converted, not a stray trailing backtick.
+    const unmatched = parseRichTextSections("<p>a single ` backtick</p>");
+    expect(unmatched[0]?.html).toBe("a single ` backtick");
+  });
 });

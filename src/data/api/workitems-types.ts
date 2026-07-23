@@ -39,6 +39,22 @@ export type WorkItemRevisionType = {
   url: string;
 };
 
+export type WorkItemCommentType = {
+  id: number;
+  workItemId: number;
+  version: number;
+  text: string;
+  createdBy: { displayName: string } | null;
+  createdDate: string;
+  modifiedDate?: string;
+};
+
+export type WorkItemCommentsResponseType = {
+  totalCount: number;
+  count: number;
+  comments: WorkItemCommentType[];
+};
+
 export type WorkItemUpdateType = {
   id: number;
   rev: number;

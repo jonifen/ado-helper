@@ -20,7 +20,7 @@ export const IterationCalculations = ({
         Note: Calculations are as per midnight this morning and do not track
         progress throughout the day. <strong>All values are in hours.</strong>
       </i>
-      <table className="table table-auto text-sm bg-[#1B3336] border border-slate-600">
+      <table className="table table-auto text-sm bg-[#292E42] border border-[#13172B]">
         <thead>
           <tr>
             <th rowSpan={2}>Member</th>
@@ -66,7 +66,7 @@ export const IterationCalculations = ({
             return (
               <tr
                 key={member.id}
-                className={`${memberIndex % 2 === 0 ? "bg-[#23474A]" : ""} text-right`}
+                className={`${memberIndex % 2 === 0 ? "bg-[#24283B]" : ""} text-right`}
               >
                 <td className="text-left w-36">{member.name}</td>
                 <td className="text-left w-36">

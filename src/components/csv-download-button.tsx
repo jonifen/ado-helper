@@ -20,7 +20,7 @@ export function CsvDownloadButton({ teamId, iterationId }: { teamId: string; ite
   return (
     <button
       type="button"
-      className="ml-3 mt-2 px-2 py-1 border border-green-500 text-green-500 text-sm rounded hover:bg-green-500 hover:text-black transition-colors"
+      className="ml-3 mt-2 px-2 py-1 border border-[#9CCB69] text-[#9CCB69] text-sm rounded hover:bg-[#9CCB69] hover:text-black transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-[#9CCB69]"
       onClick={handleDownloadCsv}
     >
       Download CSV
