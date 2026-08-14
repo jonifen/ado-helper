@@ -1,3 +1,5 @@
+import type { BurndownPointType } from "../utils/burndown.js";
+
 export type IterationDataType = {
   name: string;
   path: string;
@@ -7,7 +9,13 @@ export type IterationDataType = {
   endDate: Date;
   workItems: IterationWorkItemsType[];
   resource: IterationDataResourceType;
+  burndown: IterationBurndownType;
   payloadCreatedDate: Date;
+};
+
+export type IterationBurndownType = {
+  points: BurndownPointType[];
+  hours: BurndownPointType[];
 };
 
 export type IterationWorkItemsType = {
@@ -76,6 +84,7 @@ export type IterationDataWorkloadType = {
   totalRemaining: number;
   totalCompleted: number;
   totalPoints: number;
+  totalPointsCompleted: number;
   timeDelta: number;
   totalPointsEstimated?: number;
   totalPointsRemaining?: number;

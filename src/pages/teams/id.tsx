@@ -4,6 +4,7 @@ import { useIterationsStore } from "../../data/iterations-store.js";
 import { useTeamsStore } from "../../data/teams-store.js";
 import { useSettingsStore } from "../../data/settings-store.js";
 import { IterationsPicker } from "../../components/iterations-picker.js";
+import { VelocityChart } from "../../components/velocity-chart.js";
 
 export function Team() {
   const { teamId } = useParams<{ teamId: string }>();
@@ -48,7 +49,9 @@ export function Team() {
     <div className="font-sans items-center justify-items-center min-h-screen px-8 pb-3">
       <h2 className="text-xl font-bold">Iterations for Team {teams.find((team) => team.id === teamId)?.name}</h2>
       <IterationsPicker teamId={teamId} iterations={iterations} />
-      <div>
+      <div className="h-4"></div>
+      <VelocityChart teamId={teamId} iterations={iterations} />
+      <div className="mt-3">
         <span className="text-sm text-gray-500">
           {" "}
           [ Last updated: {lastUpdated.toLocaleString()}{" "}

@@ -28,6 +28,21 @@ export async function getDevOpsBlobUrl(url: string): Promise<string> {
   return URL.createObjectURL(blob);
 }
 
+export async function getDevOpsText(url: string): Promise<string> {
+  const { pat } = useSettingsStore.getState();
+  const headers: HeadersInit = {
+    Authorization: `Basic ${pat}`,
+    Accept: "text/plain",
+  };
+  const response = await fetch(url, { headers, cache: "no-store" });
+
+  if (!response.ok) {
+    throw new Error(`Error fetching text: ${response.statusText}`);
+  }
+
+  return await response.text();
+}
+
 export async function postDevOpsData<T>(
   url: string,
   body?: string,

@@ -4,6 +4,7 @@ import { CsvDownloadButton } from "../../components/csv-download-button.js";
 import { IterationWorkitems } from "../../components/iteration-workitems.js";
 import { IterationCalculations } from "../../components/iteration-calculations.js";
 import { CompletedWorkChart } from "../../components/completed-work-chart.js";
+import { BurndownChart } from "../../components/burndown-chart.js";
 import { useState, useEffect } from "react";
 import { useSettingsStore } from "../../data/settings-store.js";
 import { useIterationsStore } from "../../data/iterations-store.js";
@@ -97,6 +98,24 @@ export function TeamIterations() {
           </div>
 
           <IterationWorkitems workItems={data.workItems} />
+
+          {data.burndown && (
+            <div className="w-full">
+              <h3 className="text-xl font-bold card-title !mt-0">Burndown</h3>
+              <div className="flex flex-row gap-4 w-full flex-wrap">
+                <BurndownChart
+                  title="Story Points"
+                  data={data.burndown.points}
+                  yAxisLabel="Points"
+                />
+                <BurndownChart
+                  title="Task Hours"
+                  data={data.burndown.hours}
+                  yAxisLabel="Hours"
+                />
+              </div>
+            </div>
+          )}
 
           <IterationCalculations
             resource={data.resource}

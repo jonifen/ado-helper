@@ -6,15 +6,19 @@ import type {
   TeamDaysOffType,
 } from "../data/api/capacity-types.js";
 import {
+  getWorkItemRevisions,
   getWorkItemsByIds,
   getWorkItemUpdates,
 } from "../data/api/workitems.js";
 import type { WorkItemDataType } from "../data/api/workitems-types.js";
 import { sortWorkItemsByState } from "../utils/workitem-sort.js";
 import { getUpdateDate } from "../utils/state-transitions.js";
+import { buildFieldTimeline, computeBurndown } from "../utils/burndown.js";
+import { isDeliveredState } from "../utils/delivered-state.js";
 import { getTeam } from "../data/api/teams.js";
 import { generateCsv } from "../utils/csv-generation.js";
 import type {
+  IterationBurndownType,
   IterationDataMembersType,
   IterationDataTeamType,
   IterationDataType,
@@ -216,6 +220,9 @@ function calculateWorkItemTotals(
             totalRemaining: acc.totalRemaining + workItem.remaining,
             totalCompleted: acc.totalCompleted + workItem.completed,
             totalPoints: acc.totalPoints + workItem.points,
+            totalPointsCompleted:
+              acc.totalPointsCompleted +
+              (isDeliveredState(workItem.state) ? workItem.points : 0),
             timeDelta: 0,
           }
         : {
@@ -233,6 +240,7 @@ function calculateWorkItemTotals(
       totalRemaining: calcData.totalRemaining,
       totalCompleted: calcData.totalCompleted,
       totalPoints: calcData.totalPoints,
+      totalPointsCompleted: calcData.totalPointsCompleted,
       timeDelta: 0,
     },
   );
@@ -250,6 +258,7 @@ function mapTeam(
     totalRemaining: 0,
     totalCompleted: 0,
     totalPoints: 0,
+    totalPointsCompleted: 0,
     timeDelta: 0,
   });
 
@@ -283,6 +292,7 @@ function mapTeamMembers(
           totalRemaining: 0,
           totalCompleted: 0,
           totalPoints: 0,
+          totalPointsCompleted: 0,
           timeDelta: 0,
         },
         member.teamMember.displayName,
@@ -353,6 +363,39 @@ function calculateDaysRemaining(
   return daysRemaining;
 }
 
+async function getIterationBurndown(
+  userStories: WorkItemDataType[],
+  tasks: WorkItemDataType[],
+  startDate: Date,
+  endDate: Date,
+): Promise<IterationBurndownType> {
+  const [pointsTimelines, hoursTimelines] = await Promise.all([
+    Promise.all(
+      userStories.map(async (story) => {
+        const revisions = await getWorkItemRevisions(story.id);
+        return buildFieldTimeline(
+          revisions,
+          "Microsoft.VSTS.Scheduling.StoryPoints",
+        );
+      }),
+    ),
+    Promise.all(
+      tasks.map(async (task) => {
+        const revisions = await getWorkItemRevisions(task.id);
+        return buildFieldTimeline(
+          revisions,
+          "Microsoft.VSTS.Scheduling.RemainingWork",
+        );
+      }),
+    ),
+  ]);
+
+  return {
+    points: computeBurndown(pointsTimelines, startDate, endDate),
+    hours: computeBurndown(hoursTimelines, startDate, endDate),
+  };
+}
+
 export async function getIterationData(
   teamId: string,
   iterationId: string,
@@ -400,6 +443,12 @@ export async function getIterationData(
     teamResource,
     daysRemaining,
   );
+  const burndown = await getIterationBurndown(
+    userStories,
+    tasks,
+    new Date(iteration.attributes.startDate),
+    new Date(iteration.attributes.finishDate),
+  );
 
   const output: IterationDataType = {
     name: iteration.name,
@@ -416,6 +465,7 @@ export async function getIterationData(
         daysRemaining,
       },
     },
+    burndown,
     payloadCreatedDate: new Date(),
   };
 

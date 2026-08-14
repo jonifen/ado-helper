@@ -7,6 +7,8 @@ import { Team } from "./pages/teams/id.js";
 import { TeamIterations } from "./pages/teams/iterations.js";
 import { WorkItemDetail } from "./pages/workitems/id.js";
 import { WorkItemsSearch } from "./pages/workitems/index.js";
+import { RepoSearch } from "./pages/repos/index.js";
+import { RepoDetail } from "./pages/repos/name.js";
 
 export function AppRoutes() {
   return (
@@ -20,6 +22,8 @@ export function AppRoutes() {
         <Route path="/teams/:teamId/iterations/:iterationId" element={<TeamIterations />} />
         <Route path="/workitems" element={<WorkItemsSearch />} />
         <Route path="/workitems/:id" element={<WorkItemDetail />} />
+        <Route path="/repos" element={<RepoSearch />} />
+        <Route path="/repos/:name" element={<RepoDetail />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>

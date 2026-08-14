@@ -14,8 +14,24 @@ type IterationStoreType = {
   refreshIteration: (teamId: string, iterationId: string) => void;
 };
 
-function getIterationDbKey(teamId: string, iterationId: string) {
+export function getIterationDbKey(teamId: string, iterationId: string) {
   return `${teamId}/iteration/${iterationId}`;
+}
+
+/**
+ * Reads an iteration's cached data straight from localforage, without
+ * touching the Zustand store or triggering a live API refresh. Used to
+ * read many iterations at once (e.g. for a velocity trend) — unlike
+ * `loadIteration`, a cache miss here just resolves to null rather than
+ * falling back to `refreshIteration`.
+ */
+export async function getCachedIterationData(
+  teamId: string,
+  iterationId: string,
+): Promise<IterationDataType | null> {
+  const key = getIterationDbKey(teamId, iterationId);
+  const storedValue = await localforage.getItem<IterationStoreType>(key);
+  return storedValue?.data || null;
 }
 
 export const useIterationStore = create<IterationStoreType>()(
